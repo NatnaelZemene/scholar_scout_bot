@@ -1,14 +1,12 @@
 from fastapi import APIRouter
 
-from app.domain.schemas.user import UserOut
+from app.api.routers.filter_router import router as filter_router
+from app.api.routers.notification_router import router as notification_router
+from app.api.routers.scholarship_router import router as scholarship_router
+from app.api.routers.user_router import router as user_router
 
-router = APIRouter(prefix="/users", tags=["users"])
-
-@router.get("/test", response_model=UserOut)
-def get_test_user():
-    return {
-        "telegram_id": 1234567890,
-        "username": "testuser",
-        "first_name": "Test",
-        "last_name":"User",
-    }
+router = APIRouter()
+router.include_router(user_router)
+router.include_router(filter_router)
+router.include_router(scholarship_router)
+router.include_router(notification_router)

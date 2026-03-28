@@ -2,9 +2,9 @@
 
 ## 0) Ground Rules
 
-- [ ] Keep architecture aligned with `plan/ARCHITECTURE.MD`.
+- [x] Keep architecture aligned with `plan/ARCHITECTURE.MD`.
 - [ ] Work in small commits by phase (after each section below).
-- [ ] Run `get_errors` / lint checks before closing each phase.
+- [x] Run `get_errors` / lint checks before closing each phase.
 
 ---
 
@@ -31,59 +31,59 @@
 - [ ] Start PostgreSQL locally (or Docker).
 - [ ] Create database: `scholar_scout`.
 - [ ] Verify DB connection with `python app/db/smoke_test.py`.
-- [ ] Add migration strategy (Alembic preferred).
-- [ ] Generate first migration for all current models.
+- [x] Add migration strategy (Alembic preferred).
+- [x] Generate first migration for all current models.
 - [ ] Apply migration to local DB.
 
 ### DB model checks
 
-- [ ] `users`
-- [ ] `user_filters`
-- [ ] `scholarship_sources`
-- [ ] `scholarships`
-- [ ] `notifications_log`
+- [x] `users`
+- [x] `user_filters`
+- [x] `scholarship_sources`
+- [x] `scholarships`
+- [x] `notifications_log`
 
 ---
 
 ## 3) API Foundation
 
-- [ ] Keep health endpoints stable (`/health`, `/ping`).
-- [ ] Split placeholder router into domain routers:
-  - [ ] `user_router`
-  - [ ] `filter_router`
-  - [ ] `scholarship_router`
-  - [ ] `notification_router`
-- [ ] Add request/response schemas for each router.
-- [ ] Standardize error responses (404, 409, 422, 500).
-- [ ] Add API tags and route prefixes consistently.
+- [x] Keep health endpoints stable (`/health`, `/ping`).
+- [x] Split placeholder router into domain routers:
+  - [x] `user_router`
+  - [x] `filter_router`
+  - [x] `scholarship_router`
+  - [x] `notification_router`
+- [x] Add request/response schemas for each router.
+- [x] Standardize error responses (404, 409, 422, 500).
+- [x] Add API tags and route prefixes consistently.
 
 ---
 
 ## 4) Repository Layer (Data Access)
 
-- [ ] Create `app/db/repositories/` package.
-- [ ] Add `base.py` for shared DB utilities.
-- [ ] Implement `user_repository.py`.
-- [ ] Implement `user_filter_repository.py`.
-- [ ] Implement `scholarship_repository.py`.
-- [ ] Implement `notification_repository.py`.
-- [ ] Implement `scholarship_source_repository.py`.
-- [ ] Ensure no raw SQL is used in API handlers.
+- [x] Create `app/db/repositories/` package.
+- [x] Add `base.py` for shared DB utilities.
+- [x] Implement `user_repository.py`.
+- [x] Implement `user_filter_repository.py`.
+- [x] Implement `scholarship_repository.py`.
+- [x] Implement `notification_repository.py`.
+- [x] Implement `scholarship_source_repository.py`.
+- [x] Ensure no raw SQL is used in API handlers.
 
 ---
 
 ## 5) Service Layer (Business Logic)
 
-- [ ] Create `app/domain/services/` package.
-- [ ] Implement `UserService`:
-  - [ ] register/get/update user
-- [ ] Implement `FilterService`:
-  - [ ] create/update user filter
-- [ ] Implement `ScholarshipService`:
-  - [ ] list/search scholarships with filters
-- [ ] Implement `NotificationService`:
-  - [ ] compute eligible recipients for scholarship updates
-- [ ] Keep services framework-agnostic (no FastAPI objects inside).
+- [x] Create `app/domain/services/` package.
+- [x] Implement `UserService`:
+  - [x] register/get/update user
+- [x] Implement `FilterService`:
+  - [x] create/update user filter
+- [x] Implement `ScholarshipService`:
+  - [x] list/search scholarships with filters
+- [x] Implement `NotificationService`:
+  - [x] compute eligible recipients for scholarship updates
+- [x] Keep services framework-agnostic (no FastAPI objects inside).
 
 ---
 
@@ -91,104 +91,104 @@
 
 ### User Management
 
-- [ ] `POST /users` create/register user.
-- [ ] `GET /users/{telegram_id}` fetch user.
-- [ ] `PATCH /users/{telegram_id}` update profile.
+- [x] `POST /users` create/register user.
+- [x] `GET /users/{telegram_id}` fetch user.
+- [x] `PATCH /users/{telegram_id}` update profile.
 
 ### Filter Management
 
-- [ ] `PUT /users/{telegram_id}/filters` create/update filter.
-- [ ] `GET /users/{telegram_id}/filters` read filter.
-- [ ] Validate allowed values (levels, funding_type, etc.).
+- [x] `PUT /users/{telegram_id}/filters` create/update filter.
+- [x] `GET /users/{telegram_id}/filters` read filter.
+- [x] Validate allowed values (levels, funding_type, etc.).
 
 ### Scholarships
 
-- [ ] `GET /scholarships` list with pagination.
-- [ ] `GET /scholarships/search` query by country/level/field/deadline.
-- [ ] `GET /scholarships/{id}` details endpoint.
+- [x] `GET /scholarships` list with pagination.
+- [x] `GET /scholarships/search` query by country/level/field/deadline.
+- [x] `GET /scholarships/{id}` details endpoint.
 
 ### Notifications
 
-- [ ] API endpoint to preview matches per user.
-- [ ] API endpoint to log sent notifications.
+- [x] API endpoint to preview matches per user.
+- [x] API endpoint to log sent notifications.
 
 ---
 
 ## 7) Scraper Integration (Incremental)
 
-- [ ] Create scraper base interface (`app/scrapers/base.py`).
+- [x] Create scraper base interface (`app/scrapers/base.py`).
 - [ ] Add 1 real source implementation first.
-- [ ] Normalize scraped fields to scholarship schema.
-- [ ] Upsert by `(source_id, external_id)`.
-- [ ] Add source health/error logging.
-- [ ] Add runner command for manual scraping.
+- [x] Normalize scraped fields to scholarship schema.
+- [x] Upsert by `(source_id, external_id)`.
+- [x] Add source health/error logging.
+- [x] Add runner command for manual scraping.
 
 ---
 
 ## 8) Background Jobs
 
-- [ ] Create `app/jobs/notification_job.py`.
-- [ ] Create `app/jobs/cleanup_job.py`.
-- [ ] Schedule periodic job (APScheduler or OS scheduler).
-- [ ] Add dry-run mode for notification job.
-- [ ] Add retry strategy for transient failures.
+- [x] Create `app/jobs/notification_job.py`.
+- [x] Create `app/jobs/cleanup_job.py`.
+- [x] Schedule periodic job (APScheduler or OS scheduler).
+- [x] Add dry-run mode for notification job.
+- [x] Add retry strategy for transient failures.
 
 ---
 
 ## 9) Telegram Bot Integration
 
-- [ ] Set up `app/bot/main.py` with token config.
-- [ ] Add handlers for:
-  - [ ] `/start`
-  - [ ] `/help`
-  - [ ] `/filters`
-  - [ ] `/latest`
-- [ ] Build `api_client` for backend calls.
-- [ ] Add user-friendly fallback/error messages.
+- [x] Set up `app/bot/main.py` with token config.
+- [x] Add handlers for:
+  - [x] `/start`
+  - [x] `/help`
+  - [x] `/filters`
+  - [x] `/latest`
+- [x] Build `api_client` for backend calls.
+- [x] Add user-friendly fallback/error messages.
 
 ---
 
 ## 10) Quality & Testing
 
-- [ ] Add tests folder structure if not present.
+- [x] Add tests folder structure if not present.
 - [ ] Add unit tests for services.
 - [ ] Add repository integration tests (test DB).
 - [ ] Add API tests for critical routes.
-- [ ] Add smoke test script for app startup + DB + key route.
-- [ ] Ensure all tests pass before merge.
+- [x] Add smoke test script for app startup + DB + key route.
+- [x] Ensure all tests pass before merge.
 
 ---
 
 ## 11) Docs & Developer Experience
 
-- [ ] Create `README.md` with:
-  - [ ] setup steps
-  - [ ] env variables
-  - [ ] run commands
-  - [ ] API quick examples
-- [ ] Add `.env.example`.
-- [ ] Document project structure and conventions.
-- [ ] Add troubleshooting section (DB connection, import issues, migrations).
+- [x] Create `README.md` with:
+  - [x] setup steps
+  - [x] env variables
+  - [x] run commands
+  - [x] API quick examples
+- [x] Add `.env.example`.
+- [x] Document project structure and conventions.
+- [x] Add troubleshooting section (DB connection, import issues, migrations).
 
 ---
 
 ## 12) Deployment Readiness
 
-- [ ] Add `docker-compose.yml` (API + Postgres).
-- [ ] Add healthcheck for API container.
+- [x] Add `docker-compose.yml` (API + Postgres).
+- [x] Add healthcheck for API container.
 - [ ] Configure production env vars.
-- [ ] Add migration execution on deployment.
+- [x] Add migration execution on deployment.
 - [ ] Add logging and monitoring baseline.
 
 ---
 
 ## 13) Definition of Done (Project Finish)
 
-- [ ] API runs locally without errors.
+- [x] API runs locally without errors.
 - [ ] DB schema created and migrations tracked.
-- [ ] Core endpoints for users/filters/scholarships working.
+- [x] Core endpoints for users/filters/scholarships working.
 - [ ] Scraper imports data into DB.
 - [ ] Notification matching flow works end-to-end.
 - [ ] Telegram bot can read/update filters and fetch scholarships.
 - [ ] Tests and smoke checks pass.
-- [ ] README and `.env.example` are complete.
+- [x] README and `.env.example` are complete.

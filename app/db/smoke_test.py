@@ -1,6 +1,13 @@
 import asyncio
+import sys
+from pathlib import Path
 
 from sqlalchemy import text
+
+# Support running as `python app/db/smoke_test.py` from project root.
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from app.db.session import engine
 
