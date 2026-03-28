@@ -1,4 +1,4 @@
-# Scholarship Bot Deep Dive (Vibe Coder Guide)
+# Scholarship Bot Deep Dive ( if u want to understand everything )
 
 ## 1. Big Picture
 
