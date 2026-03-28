@@ -34,6 +34,7 @@ uvicorn app.api.main:app --reload
 ```
 
 Important routes:
+
 - `GET /health`
 - `POST /users`
 - `GET /users/{telegram_id}`

@@ -49,6 +49,7 @@ Same pattern is used by all major endpoints.
 ## 3.1 Root Files
 
 ### `requirements.txt`
+
 Pinned dependencies include:
 
 - API/runtime: `fastapi`, `uvicorn`, `starlette`.
@@ -58,6 +59,7 @@ Pinned dependencies include:
 - Scheduling/testing: `APScheduler`, `pytest`.
 
 ### `.env.example`
+
 Defines required environment variables:
 
 - `APP_NAME`
@@ -68,6 +70,7 @@ Defines required environment variables:
 - `TELEGRAM_BOT_TOKEN`
 
 ### `docker-compose.yml`
+
 Creates two services:
 
 - `db`: Postgres 16 with persisted volume.
@@ -76,9 +79,11 @@ Creates two services:
 Also includes API healthcheck probing `/health`.
 
 ### `README.md`
+
 Quickstart, route list, run commands, and troubleshooting.
 
 ### `alembic.ini`
+
 Alembic config:
 
 - `script_location = alembic`.
@@ -90,6 +95,7 @@ Alembic config:
 ## 3.2 Migration Layer (`alembic/`)
 
 ### `alembic/env.py`
+
 Key behavior:
 
 - Loads app settings from `app.core.config.settings`.
@@ -98,6 +104,7 @@ Key behavior:
 - Supports both offline and online migration modes.
 
 ### `alembic/versions/0001_initial_schema.py`
+
 Creates tables in this order:
 
 1. `users`
@@ -121,6 +128,7 @@ Important constraints:
 ## 3.3 Configuration and Startup (`app/core`, root scripts)
 
 ### `app/core/config.py`
+
 `Settings` extends `BaseSettings`, auto-loading `.env` values.
 
 Fields:
@@ -133,9 +141,11 @@ Fields:
 This is single source of truth for runtime settings used by API and DB layers.
 
 ### `app/check_settings.py`
+
 Simple sanity script printing loaded settings, useful to validate `.env` wiring.
 
 ### `app/smoke_test.py`
+
 Full smoke test script:
 
 - `check_api()` validates `/health` and `/ping`.
@@ -143,6 +153,7 @@ Full smoke test script:
 - Adds project root to `sys.path` to avoid import errors when executed as a script.
 
 ### `app/db/smoke_test.py`
+
 DB-only connectivity script with same import path hardening.
 
 ---
@@ -150,6 +161,7 @@ DB-only connectivity script with same import path hardening.
 ## 3.4 API Layer (`app/api`)
 
 ### `app/api/main.py`
+
 Creates FastAPI app and registers:
 
 - title/version from config.
@@ -175,9 +187,11 @@ Mapped handlers:
 - generic `Exception` -> 500
 
 ### `app/api/dependencies.py`
+
 Exposes `db_session_dependency()` to inject async SQLAlchemy session into routers.
 
 ### `app/api/routers/router.py`
+
 Composes domain routers:
 
 - user router
@@ -186,6 +200,7 @@ Composes domain routers:
 - notification router
 
 ### `app/api/routers/user_router.py`
+
 Endpoints:
 
 - `POST /users` create user
@@ -200,12 +215,14 @@ Pattern:
 - return validated response model
 
 ### `app/api/routers/filter_router.py`
+
 Endpoints:
 
 - `PUT /users/{telegram_id}/filters` upsert filter
 - `GET /users/{telegram_id}/filters` read filter
 
 ### `app/api/routers/scholarship_router.py`
+
 Endpoints:
 
 - `GET /scholarships` paginated list (`skip`, `limit`)
@@ -213,6 +230,7 @@ Endpoints:
 - `GET /scholarships/{id}` details
 
 ### `app/api/routers/notification_router.py`
+
 Endpoints:
 
 - `GET /notifications/preview/{telegram_id}` compute candidate matches
@@ -258,6 +276,7 @@ Validation rules:
 - `NotificationPreviewItem`, `NotificationPreviewOut`: preview structure for user matches.
 
 ### `common.py`
+
 Utility message and error schema types (`ApiError`, `MessageOut`) for possible future reuse.
 
 ---
@@ -267,6 +286,7 @@ Utility message and error schema types (`ApiError`, `MessageOut`) for possible f
 Services are framework-agnostic orchestrators.
 
 ### `exceptions.py`
+
 Domain-level exceptions:
 
 - `NotFoundError`
@@ -275,12 +295,14 @@ Domain-level exceptions:
 These are intentionally generic and translated to HTTP in API layer.
 
 ### `helpers.py`
+
 CSV/list conversion helpers:
 
 - `list_to_csv()` for storing filter list fields into text columns.
 - `csv_to_list()` for restoring API-friendly arrays.
 
 ### `user_service.py`
+
 Responsibilities:
 
 - `register()`: checks duplicates, raises `ConflictError` if existing telegram id.
@@ -288,6 +310,7 @@ Responsibilities:
 - `update()`: partial update preserving existing values for omitted fields.
 
 ### `filter_service.py`
+
 Responsibilities:
 
 - Ensure user exists before filter operations.
@@ -295,6 +318,7 @@ Responsibilities:
 - `get_user_filter()`: convert DB CSV fields back to list output.
 
 ### `scholarship_service.py`
+
 Responsibilities:
 
 - list active scholarships
@@ -302,6 +326,7 @@ Responsibilities:
 - fetch detail by id with not-found handling
 
 ### `notification_service.py`
+
 Responsibilities:
 
 - verify user and filter before preview.
@@ -309,6 +334,7 @@ Responsibilities:
 - create notification log by resolving `telegram_id -> user_id` first.
 
 ### `scraping_service.py`
+
 Responsibilities:
 
 - ensure source exists (create if missing).
@@ -322,9 +348,11 @@ Responsibilities:
 ## 3.7.1 DB Base and Session
 
 ### `app/db/base.py`
+
 Defines SQLAlchemy declarative `Base` and imports models so metadata is complete for Alembic.
 
 ### `app/db/session.py`
+
 Builds async engine with `pool_pre_ping=True` for dead connection resilience.
 
 Exports:
@@ -336,6 +364,7 @@ Exports:
 ## 3.7.2 ORM Models (`app/db/models`)
 
 ### `user.py`
+
 Table: `users`
 
 Columns:
@@ -351,6 +380,7 @@ Relationships:
 - one-to-many `notifications`
 
 ### `user_filter.py`
+
 Table: `user_filters`
 
 - `user_id` unique FK => one filter row per user.
@@ -358,6 +388,7 @@ Table: `user_filters`
 - `is_active` toggles participation in notifications.
 
 ### `scholarship_source.py`
+
 Table: `scholarship_sources`
 
 - unique source name
@@ -366,6 +397,7 @@ Table: `scholarship_sources`
 - `last_scraped_at` for scraper health observability
 
 ### `scholarship.py`
+
 Table: `scholarships`
 
 Important fields:
@@ -379,6 +411,7 @@ Important fields:
 Unique business key for upsert: `(source_id, external_id)`.
 
 ### `notification_log.py`
+
 Table: `notifications_log`
 
 Stores send attempts/events:
@@ -393,9 +426,11 @@ FK links to user and scholarship.
 ## 3.7.3 Repositories (`app/db/repositories`)
 
 ### `base.py`
+
 Stores shared async session in constructor.
 
 ### `user_repository.py`
+
 Methods:
 
 - `get_by_telegram_id`
@@ -403,12 +438,14 @@ Methods:
 - `update`
 
 ### `user_filter_repository.py`
+
 Methods:
 
 - `get_by_user_id`
 - `upsert` (insert if missing else update)
 
 ### `scholarship_repository.py`
+
 Methods:
 
 - `get_by_id`
@@ -418,6 +455,7 @@ Methods:
 - `search` active rows with optional filters + pagination
 
 ### `notification_repository.py`
+
 Methods:
 
 - `create_log`
@@ -436,6 +474,7 @@ Methods:
 4. limits result to 50.
 
 ### `scholarship_source_repository.py`
+
 Methods:
 
 - `get_by_name`
@@ -447,15 +486,18 @@ Methods:
 ## 3.8 Scraper Layer (`app/scrapers`)
 
 ### `base.py`
+
 Defines:
 
 - `ScrapedScholarship` dataclass (normalized data contract).
 - `BaseScholarshipScraper` abstract class with `fetch()`.
 
 ### `sources/sample_source.py`
+
 Placeholder implementation returning one static sample scholarship.
 
 ### `runner.py`
+
 Runtime sequence:
 
 1. instantiate sample scraper.
@@ -473,6 +515,7 @@ This is currently safe scaffolding for replacing with real parsers.
 ## 3.9 Background Jobs (`app/jobs`)
 
 ### `notification_job.py`
+
 Main function: `run_notification_job(dry_run=True)`.
 
 Flow:
@@ -490,6 +533,7 @@ Retry behavior:
 - catches transient exceptions and retries.
 
 ### `cleanup_job.py`
+
 Main function: `run_cleanup_job(notification_retention_days=90)`.
 
 Deletes:
@@ -498,6 +542,7 @@ Deletes:
 - scholarships with passed deadlines.
 
 ### `scheduler.py`
+
 Uses `BlockingScheduler` with wrappers that call async jobs via `asyncio.run`.
 
 Schedules:
@@ -510,6 +555,7 @@ Schedules:
 ## 3.10 Telegram Bot (`app/bot`)
 
 ### `client/api_client.py`
+
 `BackendApiClient` wraps backend HTTP calls with `httpx.AsyncClient`.
 
 Methods:
@@ -518,6 +564,7 @@ Methods:
 - `latest_scholarships(limit=5)`
 
 ### `main.py`
+
 Registers command handlers:
 
 - `/start`
@@ -541,6 +588,7 @@ Current scope:
 ## 3.11 Tests (`tests/`)
 
 ### `tests/test_health.py`
+
 Covers:
 
 - `GET /health` returns status ok.
