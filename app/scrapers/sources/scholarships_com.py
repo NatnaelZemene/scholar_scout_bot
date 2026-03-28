@@ -12,13 +12,20 @@ class ScholarshipsComScraper(BaseScholarshipScraper):
 
     async def fetch(self) -> list[ScrapedScholarship]:
         results: list[ScrapedScholarship] = []
+        # Update headers strictly to impersonate a standard browser without bot signals
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.5",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-User": "?1",
         }
         
-        # For testing, we will target a specific section: Computer Science Scholarships
         test_url = f"{self.base_url}/academic-major/computer-science"
         
         async with httpx.AsyncClient(headers=headers, follow_redirects=True) as client:
@@ -26,8 +33,7 @@ class ScholarshipsComScraper(BaseScholarshipScraper):
                 response = await client.get(test_url, timeout=15.0)
                 response.raise_for_status()
             except httpx.HTTPError as e:
-                print(f"Error fetching from Scholarships.com: {e}")
-                return results
+                raise RuntimeError(f"Error fetching from Scholarships.com: {e}") from e
 
         soup = BeautifulSoup(response.text, "html.parser")
         
