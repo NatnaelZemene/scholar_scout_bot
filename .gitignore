@@ -7,6 +7,18 @@ __pycache__/
 
 # Local SQLite database
 *.db
+*.sqlite
+*.sqlite3
+
+# Secrets and local environment files
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+*.p12
+*.crt
 
 # OS/editor artifacts
 .DS_Store
