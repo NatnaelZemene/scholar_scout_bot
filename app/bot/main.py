@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 
+from dotenv import load_dotenv
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -53,6 +54,7 @@ def build_application(bot_token: str) -> Application:
 
 
 def main() -> None:
+    load_dotenv()
     bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
     if not bot_token:
         raise RuntimeError("TELEGRAM_BOT_TOKEN is required in environment variables.")
