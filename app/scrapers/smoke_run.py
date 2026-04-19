@@ -15,6 +15,8 @@ if __name__ == "__main__":
             "status": summary.status.value,
             "items_seen": summary.items_seen,
             "items_valid": summary.items_valid,
+            "items_inserted": summary.items_inserted,
+            "items_updated": summary.items_updated,
             "error_message": summary.error_message,
         }
     )
