@@ -5,7 +5,7 @@ from enum import IntEnum
 
 from sqlalchemy import select
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, ConversationHandler
 
 from app.db.models import StudyLevel, UserProfile
 from app.db.session import SessionLocal
@@ -98,7 +98,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return OnboardingState.COUNTRY
 
 
-async def set_country(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def onboarding_set_country(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     if update.message is None or update.effective_user is None:
         return OnboardingState.COUNTRY
 
@@ -112,7 +112,7 @@ async def set_country(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
     return OnboardingState.FIELD
 
 
-async def set_field(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def onboarding_set_field(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     if update.message is None or update.effective_user is None:
         return OnboardingState.FIELD
 
@@ -130,7 +130,7 @@ async def set_field(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return OnboardingState.LEVEL
 
 
-async def set_level(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def onboarding_set_level(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     if update.message is None or update.effective_user is None:
         return OnboardingState.LEVEL
 
@@ -154,7 +154,7 @@ async def set_level(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return OnboardingState.MIN_BUDGET
 
 
-async def set_min_budget(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def onboarding_set_min_budget(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     if update.message is None or update.effective_user is None:
         return OnboardingState.MIN_BUDGET
 
@@ -168,7 +168,7 @@ async def set_min_budget(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     return OnboardingState.MAX_BUDGET
 
 
-async def set_max_budget(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def onboarding_set_max_budget(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     if update.message is None or update.effective_user is None:
         return OnboardingState.MAX_BUDGET
 
@@ -197,7 +197,94 @@ async def set_max_budget(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         "Onboarding complete. Use /profile to review your settings.",
         reply_markup=ReplyKeyboardRemove(),
     )
-    return -1
+    return ConversationHandler.END
+
+
+def _get_command_value(context: ContextTypes.DEFAULT_TYPE) -> str | None:
+    if not context.args:
+        return None
+    value = " ".join(context.args).strip()
+    return value or None
+
+
+async def set_country(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message is None or update.effective_user is None:
+        return
+
+    country = _get_command_value(context)
+    if not country:
+        await update.message.reply_text("Usage: /set_country <country>")
+        return
+
+    _get_or_create_profile(update.effective_user.id, update.effective_user.full_name)
+    _update_profile(update.effective_user.id, country=country)
+    await update.message.reply_text(f"Country updated to: {country}")
+
+
+async def set_field(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message is None or update.effective_user is None:
+        return
+
+    field = _get_command_value(context)
+    if not field:
+        await update.message.reply_text("Usage: /set_field <field of study>")
+        return
+
+    _get_or_create_profile(update.effective_user.id, update.effective_user.full_name)
+    _update_profile(update.effective_user.id, field_of_study=field)
+    await update.message.reply_text(f"Field of study updated to: {field}")
+
+
+async def set_level(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message is None or update.effective_user is None:
+        return
+
+    level_text = _get_command_value(context)
+    if not level_text:
+        await update.message.reply_text("Usage: /set_level <bachelors|masters|phd|other>")
+        return
+
+    level_text = level_text.lower()
+    if level_text not in {level.value for level in StudyLevel}:
+        await update.message.reply_text("Invalid level. Use one of: bachelors, masters, phd, other.")
+        return
+
+    _get_or_create_profile(update.effective_user.id, update.effective_user.full_name)
+    _update_profile(update.effective_user.id, study_level=StudyLevel(level_text))
+    await update.message.reply_text(f"Study level updated to: {level_text}")
+
+
+async def set_budget(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message is None or update.effective_user is None:
+        return
+
+    if len(context.args) != 2:
+        await update.message.reply_text("Usage: /set_budget <min|skip> <max|skip>")
+        return
+
+    min_parsed = _parse_budget(context.args[0])
+    max_parsed = _parse_budget(context.args[1])
+    if not min_parsed.ok or not max_parsed.ok:
+        await update.message.reply_text("Both values must be numbers or 'skip'.")
+        return
+
+    min_budget = min_parsed.value
+    max_budget = max_parsed.value
+    if min_budget is not None and max_budget is not None and max_budget < min_budget:
+        await update.message.reply_text("Max budget cannot be less than min budget.")
+        return
+
+    _get_or_create_profile(update.effective_user.id, update.effective_user.full_name)
+    _update_profile(
+        update.effective_user.id,
+        min_budget_usd=min_budget,
+        max_budget_usd=max_budget,
+    )
+    await update.message.reply_text(
+        "Budget updated: "
+        f"min={min_budget if min_budget is not None else 'skip'}, "
+        f"max={max_budget if max_budget is not None else 'skip'}"
+    )
 
 
 async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -211,4 +298,4 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     if update.message is not None:
         await update.message.reply_text("Onboarding canceled. Use /start anytime to restart.", reply_markup=ReplyKeyboardRemove())
-    return -1
+    return ConversationHandler.END
