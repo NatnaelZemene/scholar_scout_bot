@@ -1,0 +1,42 @@
+Issue Type,Summary,Description,Priority
+Task,DATA: Create core schema migration,Create baseline schema for scholarship source scrape_run user_profile match_score and notification_event tables.,Highest
+Task,DATA: Add integrity constraints and indexes,Add required constraints and practical indexes for deadline country status and URL lookups.,High
+Task,DATA: Build adapter interface,Define reusable fetch parse validate map contract for source adapters.,High
+Task,DATA: Implement retry and backoff utility,Handle transient failures with bounded retries jitter and timeout safeguards.,High
+Task,DATA: Add source run logging,Capture run id counts duration and failures per source execution.,Medium
+Task,DATA: Implement source adapter #1,Build fetch parse and canonical mapping for primary scholarship source.,Highest
+Task,DATA: Write adapter #1 parser tests,Cover malformed records missing fields and pagination edge cases.,Medium
+Task,DATA: Implement source adapter #2,Build fetch parse and canonical mapping for secondary source.,High
+Task,DATA: Write adapter #2 parser tests,Validate parser behavior across inconsistent source formats.,Medium
+Task,DATA: Build deduplication strategy,Create dedup keys using normalized title provider country deadline and URL hash.,Highest
+Task,DATA: Build canonicalization module,Normalize provider names amounts dates countries and levels.,High
+Task,DATA: Implement merge and lineage rules,Merge duplicates while preserving source lineage and ingestion metadata.,Medium
+Task,BOT: Build start onboarding wizard,Implement first run flow to collect country level field and budget preferences.,Highest
+Task,BOT: Persist user profile values,Store and update user preference profile reliably in database.,High
+Task,BOT: Add onboarding validation and defaults,Validate user input and apply safe default values for incomplete responses.,Medium
+Task,BOT: Implement profile view command,Show current profile and alert preferences in readable format.,Medium
+Task,BOT: Implement profile update command,Allow users to modify country level field and budget filters.,High
+Task,BOT: Implement pause and resume commands,Enable users to pause and resume notifications safely.,Medium
+Task,MATCH: Define scoring rules and weights,Define weighted rules for eligibility deadline location and study fit.,High
+Task,MATCH: Implement ranking pipeline,Score opportunities per user and persist ranked match candidates.,Highest
+Task,MATCH: Store explainability metadata,Save reasons for each match to improve trust and debugging.,Medium
+Task,MATCH: Build daily digest notifications,Send batched daily recommendations to active users.,High
+Task,MATCH: Build urgent alert notifications,Send high score or deadline critical notifications immediately.,High
+Task,MATCH: Track delivery outcomes,Store sent failed retried and skipped states for each notification.,Medium
+Task,MATCH: Add seen item tracking,Prevent repeated sends of already delivered opportunities.,High
+Task,MATCH: Add user cooldown controls,Throttle notification frequency to avoid spam.,High
+Task,MATCH: Add idempotent dispatch keys,Protect dispatcher from duplicate sends during retries or restarts.,Medium
+Task,OPS: Schedule ingestion jobs,Automate scrape cadence with source specific schedules and retries.,High
+Task,OPS: Schedule matching and notify jobs,Run ranking and dispatch jobs at predictable intervals.,High
+Task,OPS: Persist job run history,Store status duration counts and failure traces for every job.,Medium
+Task,OPS: Standardize structured logs,Adopt consistent log schema levels and context keys.,Medium
+Task,OPS: Add core metrics counters,Track scrape success match volume send failures and retries.,Medium
+Task,OPS: Configure failure alerts,Create alerts for repeated errors stuck jobs and notification failures.,High
+Task,QA: Add adapter unit tests,Test parsing mapping validation and retry behavior for adapters.,Medium
+Task,QA: Add bot flow tests,Test start onboarding profile edits and pause resume behaviors.,Medium
+Task,QA: Add end to end integration tests,Validate full ingest to match to notify workflow.,High
+Task,OPS: Audit secret handling,Ensure tokens and credentials are not logged or committed.,High
+Task,OPS: Create token rotation checklist,Document token rotation verification and rollback steps.,Medium
+Task,OPS: Write release checklist,Document preflight deploy and post deploy validation steps.,Medium
+Task,OPS: Write rollback checklist,Document safe rollback sequence with data protection checks.,High
+Task,QA: Run staging smoke test and signoff,Execute smoke test on staging and record go or no go decision.,High

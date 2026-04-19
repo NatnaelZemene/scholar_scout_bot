@@ -1,0 +1,5 @@
+"Legacy ID","Issue Type","Summary","Description","Epic Name","Priority"
+"E-001","Epic","V2 Data Foundation and Ingestion","Set up schema, adapters, validation, deduplication, and storage quality for reliable scholarship ingestion.","V2 Data Foundation and Ingestion","Highest"
+"E-002","Epic","V2 Telegram User Experience","Build Telegram onboarding, profile management, and user-safe interaction flow.","V2 Telegram User Experience","High"
+"E-003","Epic","V2 Matching and Notification Engine","Build profile-based ranking, explainable scoring, and controlled notifications.","V2 Matching and Notification Engine","Highest"
+"E-004","Epic","V2 Operations Quality and Launch","Automate jobs, add observability, test coverage, security checks, and launch playbook.","V2 Operations Quality and Launch","High"
